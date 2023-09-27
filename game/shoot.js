@@ -36,7 +36,9 @@ function collisions()
 {
     bullet_collision();
     player_collision();
+    ennemy_collision();
     player_falling();
+    playerEnnemyCollision();
 }
 
 function bullet_collision()
@@ -55,6 +57,20 @@ function bullet_collision()
 
 }
 
+function playerEnnemyCollision() {
+    var distance = player1.graphic.position.distanceTo(player2.graphic.position);
+    if (distance < 20 && player2.fullLife) {
+        player1.life -= 1;
+        console.log(player1.life)
+
+        player1.displayInfo();
+
+        if (player1.life <= 0) {
+            player1.dead();
+        }
+    }
+}
+
 function player_collision()
 {
     //collision between player and walls
@@ -63,6 +79,8 @@ function player_collision()
 
     if ( x > WIDTH )
         player1.graphic.position.x -= x - WIDTH;
+    if ( x < 0 )
+        player1.graphic.position.x -= x;
     if ( y < 0 )
         player1.graphic.position.y -= y;
     if ( y > HEIGHT )
@@ -70,6 +88,20 @@ function player_collision()
 
 }
 
+
+function ennemy_collision() {
+    for (var i = 0; i < player1.bullets.length; i++) {
+        var bullet = player1.bullets[i];
+
+        var dist = bullet.position.distanceTo(player2.graphic.position);
+        if (dist < 10) {  
+            player2.dead();
+            scene.remove(bullet);
+            player1.bullets.splice(i, 1);
+            i--;
+        }
+    }
+}
 function player_falling()
 {
     var nb_tile = 10;
@@ -82,7 +114,7 @@ function player_falling()
 
     for (var i = 0; i < length; i++) {
         element = noGround[i];
-
+        if (element) {
         var tileX = (element[0]) | 0;
         var tileY = (element[1]) | 0;
         var mtileX = (element[0] + sizeOfTileX) | 0;
@@ -93,8 +125,12 @@ function player_falling()
             && (y > tileY) 
             && (y < mtileY))
         {
-           player1.dead();
-        }
+           player1.life -= 1; 
+           player1.displayInfo();
+           if (player1.life <= 0){
+            player1.dead();
+           }
+        }}
     }
 
 }

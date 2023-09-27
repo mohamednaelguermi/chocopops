@@ -1,11 +1,12 @@
-var Player = function(name, color, position, direction) {
+var Player = function(name, color, position, direction, fullLife) {
 
     this.name = name;
+    this.fullLife = true;
+    this.speed = 0;
     this.position = position;
     this.life = 3;
     this.bullets = new Array();
     this.direction = direction;
-    this.speed = 0;
 
     this.material = new THREE.MeshLambertMaterial({
         color: color,
@@ -22,10 +23,15 @@ var Player = function(name, color, position, direction) {
 
 Player.prototype.dead = function () {
     this.graphic.position.z = this.graphic.position.z-0.1;
+    this.fullLife = false;
+    scene.remove(this.graphic)
+    if (this.name == "player2") {
+        jQuery('#'+this.name+' >.life').text("Tu as tué l'ennemi !");
+    } else {
         //Nettoyage de la div container
         $("#container").html("");
         jQuery('#'+this.name+' >.life').text("Tu es mort !");
-        init();
+        init();}
 }
 
 Player.prototype.accelerate = function (distance) {
